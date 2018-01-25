@@ -10,13 +10,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
 
-import com.kamilsucharski.deeplearningandroid.R;
-import com.kamilsucharski.deeplearningandroid.data.database.JobDataBase;
-import com.kamilsucharski.deeplearningandroid.deeplearning.BinaryClassifier;
-import com.kamilsucharski.deeplearningandroid.deeplearning.LearnableModel;
-import com.kamilsucharski.deeplearningandroid.data.mocking.MockData;
-import com.kamilsucharski.deeplearningandroid.data.mocking.RandomizeData;
-import com.kamilsucharski.deeplearningandroid.presentation.recyclerview.JobAdapter;
 
 import java.util.List;
 
@@ -84,6 +77,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private void refreshList() {
+        jobAdapter.setJobs(binaryClassifier.predict(RandomizeData.randomizeJobs(20)));
+        recyclerView.scrollToPosition(0);
+    }
 
-    
+
+    private void disableButtons() {
+        mockDataButton.setBackgroundColor(Color.RED);
+        learnButton.setBackgroundColor(Color.RED);
+        refreshButton.setBackgroundColor(Color.RED);
+        mockDataButton.setClickable(false);
+        learnButton.setClickable(false);
+        refreshButton.setClickable(false);
+    }
+
+
+    private void enableButtons() {
+        mockDataButton.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        learnButton.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        refreshButton.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        mockDataButton.setClickable(true);
+        learnButton.setClickable(true);
+        refreshButton.setClickable(true);
+    }
+
+
+
 }
