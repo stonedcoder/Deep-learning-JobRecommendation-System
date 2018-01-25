@@ -1,4 +1,4 @@
-package com.coding_blocks.stonedcoder.dlandroid.data;
+package com.coding_blocks.stonedcoder.dlandroid.data.database;
 
 import java.util.LinkedList;
 
