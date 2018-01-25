@@ -30,7 +30,7 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:26.1.0'
     implementation 'com.android.support:cardview-v7:26.1.0'
     testCompile 'junit:junit:4.12'
-    implementationpile 'com.android.support:multidex:1.0.1'
+    testCompile 'com.android.support:multidex:1.0.1'
 
     //DeepLearning4J
     implementation 'org.deeplearning4j:deeplearning4j-core:0.7.2'
