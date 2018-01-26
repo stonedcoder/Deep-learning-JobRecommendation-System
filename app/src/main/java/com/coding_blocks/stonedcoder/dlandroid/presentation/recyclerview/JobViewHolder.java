@@ -1,99 +1,105 @@
 package com.coding_blocks.stonedcoder.dlandroid.presentation.recyclerview;
 
+import android.graphics.Color;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.coding_blocks.stonedcoder.dlandroid.R;
-import com.coding_blocks.stonedcoder.dlandroid.data.database.JobDataBase;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by stonedcoder on 26/01/18.
  */
 
-public class JobAdapter extends RecyclerView.Adapter<JobViewHolder> {
+public class JobViewHolder extends RecyclerView.ViewHolder {
+    public final int DISLIKE = 0;
+    public final int LIKE = 1;
+    public final int NO_CHOICE = 2;
+    private TextView jobItemName;
+    private TextView jobItemSalary;
+    private TextView jobItemPercentage;
+    private CardView likeButton;
+    private CardView dislikeButton;
+    private Method userChoiceCallback;
+    private Object parent;
 
-    private List<LearnableModel> jobs;
-    private Map<Integer, LearnableModel> jobsToLearn = new HashMap<>();
-
-    public JobAdapter(List<LearnableModel> jobs) {
-        this.jobs = jobs;
+    public JobViewHolder(View itemView) {
+        super(itemView);
+        jobItemName = (TextView) itemView.findViewById(R.id.job_item_name);
+        jobItemSalary = (TextView) itemView.findViewById(R.id.job_item_salary);
+        jobItemPercentage = (TextView) itemView.findViewById(R.id.job_item_percentage);
+        likeButton = (CardView) itemView.findViewById(R.id.job_item_like_button);
+        dislikeButton = (CardView) itemView.findViewById(R.id.job_item_dislike_button);
+        initializeButtons();
     }
 
-    @Override
-    public JobViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.job_item, parent, false);
-        JobViewHolder holder = new JobViewHolder(view);
-        return holder;
-    }
-
-    @Override
-    public void onBindViewHolder(JobViewHolder holder, int position) {
-        Map<String, Integer> job = jobs.get(position).getValues();
-        if (jobsToLearn.containsKey(position)) {
-            holder.setValues(decodeType(job.get("type")), job.get("salary"), job.get("probability"), jobsToLearn.get(position).getValues().get("choice"));
-        } else {
-            holder.setValues(decodeType(job.get("type")), job.get("salary"), job.get("probability"), holder.NO_CHOICE);
-        }
-
-        try {
-            Class[] parameterTypes = new Class[2];
-            parameterTypes[0] = int.class;
-            parameterTypes[1] = boolean.class;
-            Method method = getClass().getDeclaredMethod("setUserChoice", parameterTypes);
-            holder.setUserChoiceCallback(this, method);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public int getItemCount() {
-        return jobs.size();
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return position;
-    }
-
-    public void setJobs(List<LearnableModel> jobs) {
-        jobsToLearn = new HashMap<>();
-        this.jobs = jobs;
-        Collections.sort(jobs, new ProbabilityComparator());
-        notifyDataSetChanged();
-    }
-
-    public void writeJobs() {
-        JobDataBase.writeJobs(new ArrayList<>(jobsToLearn.values()));
-    }
-
-    public void setUserChoice(int position, boolean choice) {
-        LearnableModel job = jobs.get(position);
-        job.setLabels(new int[]{encodeChoice(choice)});
-        jobsToLearn.put(position, job);
-    }
-
-    private String decodeType(int job) {
-        switch (job) {
-            case 0: return "Mechanic";
-            case 1: return "Programmer";
-            case 2: return "Teacher";
-            case 3: return "Taxi driver";
-            case 4: return "Manager";
-            case 5: return "Carpenter";
-            default: return "";
+    public void setValues(String name, int salary, int percentage, int choice) {
+        setIsRecyclable(false);
+        jobItemName.setText(name);
+        jobItemSalary.setText(String.valueOf(salary));
+        jobItemPercentage.setText(String.valueOf(percentage));
+        setPercentageColor(percentage);
+        switch (choice) {
+            case DISLIKE: setDislikeColors(); break;
+            case LIKE: setLikeColors(); break;
+            case NO_CHOICE: setNeutralColors(); break;
         }
     }
 
-    private int encodeChoice(boolean choice) {
-        return choice ? 1: 0;
+    public void setUserChoiceCallback(Object parent, Method method) {
+        userChoiceCallback = method;
+        this.parent = parent;
+    }
+
+    private void setPercentageColor(int percentage) {
+        if (percentage < 35) {
+            jobItemPercentage.setTextColor(Color.RED);
+        } else if (percentage < 70) {
+            jobItemPercentage.setTextColor(Color.YELLOW);
+        } else jobItemPercentage.setTextColor(Color.GREEN);
+    }
+
+    private void initializeButtons() {
+        likeButton.setOnClickListener(v -> {
+            setLikeColors();
+            try {
+                userChoiceCallback.invoke(parent, getAdapterPosition(), true);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        });
+
+        dislikeButton.setOnClickListener(v -> {
+            setDislikeColors();
+            try {
+                userChoiceCallback.invoke(parent, getAdapterPosition(), false);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void setNeutralColors(){
+        likeButton.setCardBackgroundColor(Color.WHITE);
+        dislikeButton.setCardBackgroundColor(Color.WHITE);
+    }
+
+    private void setLikeColors(){
+        likeButton.setCardBackgroundColor(Color.GREEN);
+        dislikeButton.setCardBackgroundColor(Color.WHITE);
+    }
+
+    private void setDislikeColors(){
+        likeButton.setCardBackgroundColor(Color.WHITE);
+        dislikeButton.setCardBackgroundColor(Color.RED);
     }
 }
+\

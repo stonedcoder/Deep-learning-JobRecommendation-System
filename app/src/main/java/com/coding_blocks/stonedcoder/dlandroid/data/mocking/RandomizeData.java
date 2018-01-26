@@ -1,5 +1,7 @@
 package com.coding_blocks.stonedcoder.dlandroid.data.mocking;
 
+import com.coding_blocks.stonedcoder.dlandroid.data.model.Job;
+
 import java.util.LinkedList;
 import java.util.Random;
 
