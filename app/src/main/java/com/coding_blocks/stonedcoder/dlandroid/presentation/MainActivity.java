@@ -1,4 +1,4 @@
-package com.coding_blocks.stonedcoder.dlandroid;
+package com.coding_blocks.stonedcoder.dlandroid.presentation;
 
 
 import android.graphics.Color;
@@ -10,6 +10,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
 
+
+import com.coding_blocks.stonedcoder.dlandroid.R;
 
 import java.util.List;
 

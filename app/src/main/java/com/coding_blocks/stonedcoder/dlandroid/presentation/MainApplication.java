@@ -1,4 +1,4 @@
-package com.coding_blocks.stonedcoder.dlandroid;
+package com.coding_blocks.stonedcoder.dlandroid.presentation;
 
 /**
  * Created by stonedcoder on 25/01/18.
